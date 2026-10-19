@@ -34,8 +34,18 @@ class Item(BaseModel):
 
 # [ROUTES]
 # - [SALES] ITEM
-@app.post("/items/")
-def create_item(item:Item):
+@app.post("/items/", status_code=201)
+def create_item(item:Item,db:session = Depends(database.get_db)):
+    # Konversi data sales
+    data_sales = models.SalesModel(
+        item_name = item.name,
+        total_price= item.price,
+       quantity=item.in_stock
+    )
+    # Simpan ke SQLITE
+    db.add(data_sales)
+    db.commit()
+    db.refresh(data_sales)
     return {
         "message" : "item registred succesfully",
         "data" : item

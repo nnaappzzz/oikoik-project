@@ -25,6 +25,10 @@ class SaleResponse(SaleCreate):
     class Config:
         orm_mode = True
 
+# {AREA}
+class AreaBase(BaseModel):
+    AREA:str
+
 # - test -
 class Item(BaseModel):
     name : str
@@ -32,9 +36,10 @@ class Item(BaseModel):
     in_stock : bool = True
 
 
-# [ROUTES]
-# - [SALES] ITEM
-@app.post("/items/", status_code=201)
+# [ROUTES & CONTROLLERS]
+# - [SALES] 
+# {ITEM}
+@app.post("/sales/items/", status_code=201)
 def create_item(item:Item,db:session = Depends(database.get_db)):
     # Konversi data sales
     data_sales = models.SalesModel(
@@ -51,12 +56,35 @@ def create_item(item:Item,db:session = Depends(database.get_db)):
         "data" : item
     }
 
-@app.get("/items/")
+@app.get("/sales/items/")
 def items():
     return{
         "message" : "items()"
     }
 
+# {AREA - POST}
+@app.post("/sales/area", status_code=201)
+def create_area(area:AreaBase,db:session = Depends(database.get_db)):
+    # konversi data
+    data_area = models.AreaModel(
+        AREA=area.AREA
+    )
+    # Save db
+    db.add(data_area)
+    db.commit()
+    db.refresh(data_area)
+
+    return {
+        "message" : "item registred succesfully",
+        "data" : data_area
+    }
+
+# {AREA - GET}
+@app.get("/sales/area", status_code=200)
+def get_areas(db:session = Depends(database.get_db)):
+    return{
+        "msg" : "area is running"
+    }
 # - Testing -
 @app.get("/")
 def read_root():

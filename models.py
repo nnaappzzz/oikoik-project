@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Float, DateTime, Enum as SQLEnum
+from sqlalchemy import Column, Integer, String, Float, DateTime, Enum as SQLEnum, ForeignKey
 from sqlalchemy.orm import relationship
 from datetime import datetime
 from database import Base
@@ -8,6 +8,8 @@ from enum import Enum
 class NamaBarangEnum(str, Enum):
     BARANG_A = "Telur Pack A"
     BARANG_B = "Telur Pack B"
+
+# [SALES]
 
 class SalesModel(Base):
     __tablename__ = "sales"
@@ -19,7 +21,6 @@ class SalesModel(Base):
     total_price = Column(Float, nullable=False)
     created_at = Column(DateTime,default=datetime.utcnow)
 
-
 class AreaModel(Base):
     # {nama tabel}
     __tablename__ = 'AREA'
@@ -28,7 +29,6 @@ class AreaModel(Base):
     AREA = Column(String, nullable=True)
     # {relasi tabel}
     TOKO = relationship("TokoModel",back_populates="AREA")
-
 
 class TokoModel(Base):
     # {nama tabel}
@@ -41,4 +41,5 @@ class TokoModel(Base):
     CREATED_AT = Column(DateTime, default=datetime.utcnow)
     UPDATED_AT = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     # {relationship}
+    AREA_ID = Column(Integer, ForeignKey("AREA.id"))
     AREA = relationship("AreaModel", back_populates="TOKO")
